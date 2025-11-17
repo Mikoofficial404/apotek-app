@@ -1,0 +1,14 @@
+import vine from '@vinejs/vine'
+
+export const addressValidator = vine.compile(
+  vine.object({
+    user_id: vine.number().exists({ table: 'users', column: 'id' }),
+    label: vine.string().trim().maxLength(255),
+    recipent_name: vine.string().trim().maxLength(255),
+    phone: vine.number(),
+    address: vine.string().trim().maxLength(255),
+    city: vine.string().trim().maxLength(255),
+    province: vine.string().trim().maxLength(255),
+    postal_code: vine.string().trim().maxLength(255),
+  })
+)
