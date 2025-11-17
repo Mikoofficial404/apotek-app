@@ -19,6 +19,15 @@ export default class Product extends BaseModel {
   @column()
   declare harga: number
 
+  @column()
+  declare image_url: string
+
+  @column()
+  declare category_id: number
+
+  @column()
+  declare supplier_id: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -26,22 +35,22 @@ export default class Product extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Category, {
-    foreignKey: 'categoryId',
+    foreignKey: 'category_id',
   })
   declare category: BelongsTo<typeof Category>
 
   @belongsTo(() => Supplier, {
-    foreignKey: 'supplierId',
+    foreignKey: 'supplier_id',
   })
   declare supplier: BelongsTo<typeof Supplier>
 
   @hasMany(() => CartItem, {
-    foreignKey: 'productId',
+    foreignKey: 'product_id',
   })
   declare cartItems: HasMany<typeof CartItem>
 
   @hasMany(() => OrderItem, {
-    foreignKey: 'productId',
+    foreignKey: 'product_id',
   })
   declare orderItems: HasMany<typeof OrderItem>
 }

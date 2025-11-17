@@ -27,12 +27,12 @@ export default class OrderItem extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Order, {
-    foreignKey: 'orderId',
+    foreignKey: 'order_id',
   })
   declare order: BelongsTo<typeof Order>
 
   @belongsTo(() => Product, {
-    foreignKey: 'productId',
+    foreignKey: 'product_id',
   })
   declare product: BelongsTo<typeof Product>
 }

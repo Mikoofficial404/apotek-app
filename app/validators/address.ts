@@ -4,8 +4,8 @@ export const addressValidator = vine.compile(
   vine.object({
     user_id: vine.number().exists({ table: 'users', column: 'id' }),
     label: vine.string().trim().maxLength(255),
-    recipent_name: vine.string().trim().maxLength(255),
-    phone: vine.number(),
+    recipient_name: vine.string().trim().maxLength(255),
+    phone_number: vine.number(),
     address: vine.string().trim().maxLength(255),
     city: vine.string().trim().maxLength(255),
     province: vine.string().trim().maxLength(255),

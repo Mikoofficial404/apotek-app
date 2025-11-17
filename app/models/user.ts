@@ -37,17 +37,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   @hasMany(() => Address, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare addresses: HasMany<typeof Address>
 
   @hasMany(() => Cart, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare carts: HasMany<typeof Cart>
 
   @hasMany(() => Order, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare orders: HasMany<typeof Order>
   static accessTokens = DbAccessTokensProvider.forModel(User)

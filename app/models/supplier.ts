@@ -14,7 +14,7 @@ export default class Supplier extends BaseModel {
   declare alamat: string
 
   @column()
-  declare phone_number: string
+  declare phone_number: number
 
   @column()
   declare email: string
@@ -26,7 +26,7 @@ export default class Supplier extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Product, {
-    foreignKey: 'supplierId',
+    foreignKey: 'supplier_id',
   })
   declare products: HasMany<typeof Product>
 }

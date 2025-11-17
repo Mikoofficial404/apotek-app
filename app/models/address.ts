@@ -15,10 +15,10 @@ export default class Address extends BaseModel {
   declare label: string
 
   @column()
-  declare recipent_name: string
+  declare recipient_name: string
 
   @column()
-  declare phone: number
+  declare phone_number: number
 
   @column()
   declare address: string
@@ -39,12 +39,12 @@ export default class Address extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => User, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare user: BelongsTo<typeof User>
 
   @hasMany(() => Order, {
-    foreignKey: 'shippingAddressId',
+    foreignKey: 'shipping_address_id',
   })
   declare orders: HasMany<typeof Order>
 }

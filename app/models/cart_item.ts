@@ -24,12 +24,12 @@ export default class CartItem extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Cart, {
-    foreignKey: 'cartId',
+    foreignKey: 'cart_id',
   })
   declare cart: BelongsTo<typeof Cart>
 
   @belongsTo(() => Product, {
-    foreignKey: 'productId',
+    foreignKey: 'product_id',
   })
   declare product: BelongsTo<typeof Product>
 }

@@ -22,13 +22,10 @@ export default class Order extends BaseModel {
   declare total_price: number
 
   @column()
-  declare shipping_cost: number
-
-  @column()
   declare status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
 
   @column()
-  declare payment_status: 'unpaid' | 'paid' | 'refunded' | 'failed'
+  declare payment_status: 'unpaid' | 'paid' | 'refunded'
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -37,17 +34,17 @@ export default class Order extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => User, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare user: BelongsTo<typeof User>
 
   @belongsTo(() => Address, {
-    foreignKey: 'shippingAddressId',
+    foreignKey: 'shipping_address_id',
   })
   declare shippingAddress: BelongsTo<typeof Address>
 
   @hasMany(() => OrderItem, {
-    foreignKey: 'orderId',
+    foreignKey: 'order_id',
   })
   declare orderItems: HasMany<typeof OrderItem>
 }

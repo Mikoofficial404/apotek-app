@@ -18,7 +18,7 @@ export default class Cart extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => User, {
-    foreignKey: 'userId',
+    foreignKey: 'user_id',
   })
   declare user: BelongsTo<typeof User>
 
