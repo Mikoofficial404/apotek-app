@@ -23,7 +23,7 @@ export default class AuthController {
     } catch (error) {
       return response.status(400).json({
         status: 'error',
-        message: error.messages(),
+        message: (error as any)?.messages ?? (error as any)?.message ?? 'Failed to register user',
       })
     }
   }

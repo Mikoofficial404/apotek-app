@@ -13,5 +13,7 @@
 */
 
 export const policies = {
+  SupplierPolicy: () => import('#policies/supplier_policy'),
+  CategoryPolicy: () => import('#policies/category_policy'),
   ProductPolicy: () => import('#policies/product_policy')
 }

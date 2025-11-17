@@ -1,9 +1,9 @@
 import User from '#models/user'
-import Product from '#models/product'
+import Category from '#models/category'
 import { BasePolicy } from '@adonisjs/bouncer'
 import type { AuthorizerResponse } from '@adonisjs/bouncer/types'
 
-export default class ProductPolicy extends BasePolicy {
+export default class CategoryPolicy extends BasePolicy {
   async before(user: User | null, _action: string, ..._params: any[]) {
     if (!user) {
       return false
@@ -24,11 +24,11 @@ export default class ProductPolicy extends BasePolicy {
     return false
   }
 
-  update(_user: User, _product: Product): AuthorizerResponse {
+  update(_user: User, _category: Category): AuthorizerResponse {
     return false
   }
 
-  delete(_user: User, _product: Product): AuthorizerResponse {
+  delete(_user: User, _category: Category): AuthorizerResponse {
     return false
   }
 }
