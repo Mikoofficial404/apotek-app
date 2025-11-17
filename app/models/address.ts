@@ -18,7 +18,7 @@ export default class Address extends BaseModel {
   declare recipient_name: string
 
   @column()
-  declare phone_number: number
+  declare phone_number: string
 
   @column()
   declare address: string

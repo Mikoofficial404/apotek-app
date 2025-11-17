@@ -14,7 +14,7 @@ export default class Supplier extends BaseModel {
   declare alamat: string
 
   @column()
-  declare phone_number: number
+  declare phone_number: string
 
   @column()
   declare email: string

@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('user_id').unsigned().references('id').inTable('users')
       table.string('label').notNullable()
       table.string('recipient_name').notNullable()
-      table.integer('phone_number').notNullable()
+      table.string('phone_number').notNullable()
       table.text('address').notNullable()
       table.string('city').notNullable()
       table.string('province').notNullable()

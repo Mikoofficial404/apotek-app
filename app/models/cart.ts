@@ -23,7 +23,7 @@ export default class Cart extends BaseModel {
   declare user: BelongsTo<typeof User>
 
   @hasMany(() => CartItem, {
-    foreignKey: 'cartId',
+  foreignKey: 'cart_id',
   })
   declare cartItems: HasMany<typeof CartItem>
 }

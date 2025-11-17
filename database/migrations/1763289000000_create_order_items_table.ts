@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.integer('order_id').unsigned().references('id').inTable('orders')
       table.integer('product_id').unsigned().references('id').inTable('products')
       table.integer('quantity').notNullable()
-      table.integer('subtotal').notNullable()
+      table.decimal('subtotal', 10, 2).notNullable()
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
