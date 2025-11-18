@@ -24,14 +24,6 @@ router
     router.post('/auth/register', [AuthController, 'register'])
     router.post('/auth/login', [AuthController, 'login'])
 
-    //contoh
-    //router.resource('/threads', ThreadsController).apiOnly().only(['index', 'show'])
-    //router
-    // .resource('/threads', ThreadsController)
-    // .apiOnly()
-    // .except(['index', 'show'])
-    // .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
-
     router
       .resource('/category', CategoriesController)
       .apiOnly()
@@ -45,6 +37,6 @@ router
     router
       .resource('/products', ProductController)
       .apiOnly()
-      .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
+      .use(['index', 'show', 'store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
   })
   .prefix('/api')

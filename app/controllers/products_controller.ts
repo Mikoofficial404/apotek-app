@@ -2,21 +2,61 @@ import Category from '#models/category'
 import Product from '#models/product'
 import ProductPolicy from '#policies/product_policy'
 import { ProductValidator, UpdateValidator } from '#validators/product'
+import { sortProduct } from '#validators/sort_product'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import fs from 'node:fs'
 
 export default class ProductsController {
-  // public async index({ request, response, bouncer }: HttpContext) {
-  //   if (await bouncer.with(ProductPolicy).denies('view')) {
-  //     return response.forbidden('You are not authorized to view products')
-  //   }
-  //   try {
-  //     const page = request.input('page', 1)
-  //     const perPage = request.input('per_page', 10)
-  //     const userId = request.input('user_id')
-  //   } catch (error) {}
-  // }
+  public async index({ request, response, bouncer }: HttpContext) {
+    try {
+      if (await bouncer.with(ProductPolicy).denies('view')) {
+        return response.forbidden('You are not authorized to view products')
+      }
+      const page = request.input('page', 1)
+      const perPage = request.input('per_page', 10)
+      const categoryId = request.input('category_id')
+      const supplierId = request.input('supplier_id')
+      const sortValidate = await request.validateUsing(sortProduct)
+      const sortBy = sortValidate.sort_by || 'id'
+      const order = sortValidate.order_by || 'asc'
+      const product = await Product.query()
+        .if(categoryId, (query) => query.where('category_id', categoryId))
+        .if(supplierId, (query) => query.where('supplier_id', supplierId))
+        .orderBy(sortBy, order)
+        .preload('category')
+        .preload('supplier')
+        .paginate(page, perPage)
+
+      return response.status(200).json({
+        data: product,
+      })
+    } catch (error) {
+      return response.status(404).json({
+        message: error.message,
+      })
+    }
+  }
+
+  public async show({ params, response, bouncer }: HttpContext) {
+    try {
+      if (await bouncer.with(ProductPolicy).denies('view')) {
+        return response.forbidden('You are not authorized to view products')
+      }
+      const product = await Product.query()
+        .where('id', params.id)
+        .preload('category')
+        .preload('supplier')
+        .firstOrFail()
+      return response.status(200).json({
+        data: product,
+      })
+    } catch (error) {
+      return response.status(404).json({
+        message: error.message,
+      })
+    }
+  }
 
   public async store({ request, response, bouncer }: HttpContext) {
     try {
