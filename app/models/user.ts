@@ -50,5 +50,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
     foreignKey: 'user_id',
   })
   declare orders: HasMany<typeof Order>
-  static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  static accessTokens = DbAccessTokensProvider.forModel(User, {
+    expiresIn: '30m',
+  })
 }

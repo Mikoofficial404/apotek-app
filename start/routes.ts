@@ -9,6 +9,7 @@
 
 const CategoriesController = () => import('#controllers/categories_controller')
 const SupplierController = () => import('#controllers/suppliers_controller')
+const ProductController = () => import('#controllers/products_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 const AuthController = () => import('#controllers/auth_controller')
@@ -38,6 +39,11 @@ router
 
     router
       .resource('/supplier', SupplierController)
+      .apiOnly()
+      .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
+
+    router
+      .resource('/products', ProductController)
       .apiOnly()
       .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
   })
