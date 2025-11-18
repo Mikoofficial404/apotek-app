@@ -1,7 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import SupplierPolicy from '#policies/supplier_policy'
 import Supplier from '#models/supplier'
-import { SupplierValidator } from '#validators/supplier'
+import { SupplierValidator, SupplierUpdateValidator } from '#validators/supplier'
 
 export default class SuppliersController {
   public async store({ request, response, bouncer }: HttpContext) {
@@ -28,11 +28,11 @@ export default class SuppliersController {
   public async update({ request, response, bouncer, params }: HttpContext) {
     try {
       const supplier = await Supplier.findOrFail(params.id)
-      if (await bouncer.with(SupplierPolicy).denies('create')) {
-        return response.forbidden('You are not authorized to create suppliers')
+      if (await bouncer.with(SupplierPolicy).denies('update', supplier)) {
+        return response.forbidden('You are not authorized to update suppliers')
       }
 
-      const validateData = await request.validateUsing(SupplierValidator)
+      const validateData = await request.validateUsing(SupplierUpdateValidator)
       await supplier.merge(validateData).save()
       return response.status(200).json({
         data: supplier,
@@ -45,11 +45,11 @@ export default class SuppliersController {
     }
   }
 
-  public async delete({ response, bouncer, params }: HttpContext) {
+  public async destroy({ response, bouncer, params }: HttpContext) {
     try {
       const supplier = await Supplier.findOrFail(params.id)
-      if (await bouncer.with(SupplierPolicy).denies('create')) {
-        return response.forbidden('You are not authorized to create suppliers')
+      if (await bouncer.with(SupplierPolicy).denies('delete', supplier)) {
+        return response.forbidden('You are not authorized to delete suppliers')
       }
 
       await supplier.delete()

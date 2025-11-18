@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.string('name_product').notNullable()
       table.integer('stock').notNullable()
       table.decimal('harga', 10, 2).notNullable()
-      table.string('image_url').notNullable()
+      table.string('image_url').nullable()
       table.integer('category_id').unsigned().references('id').inTable('categories')
       table.integer('supplier_id').unsigned().references('id').inTable('suppliers')
       table.timestamp('created_at')

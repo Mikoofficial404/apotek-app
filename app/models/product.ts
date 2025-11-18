@@ -10,7 +10,7 @@ export default class Product extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'name_product' })
   declare nameProduct: string
 
   @column()
@@ -19,14 +19,14 @@ export default class Product extends BaseModel {
   @column()
   declare harga: number
 
-  @column()
-  declare image_url: string
+  @column({ columnName: 'image_url' })
+  declare imageUrl: string | null
 
-  @column()
-  declare category_id: number
+  @column({ columnName: 'category_id' })
+  declare categoryId: number
 
-  @column()
-  declare supplier_id: number
+  @column({ columnName: 'supplier_id' })
+  declare supplierId: number
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -35,22 +35,22 @@ export default class Product extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Category, {
-    foreignKey: 'category_id',
+    foreignKey: 'categoryId',
   })
   declare category: BelongsTo<typeof Category>
 
   @belongsTo(() => Supplier, {
-    foreignKey: 'supplier_id',
+    foreignKey: 'supplierId',
   })
   declare supplier: BelongsTo<typeof Supplier>
 
   @hasMany(() => CartItem, {
-    foreignKey: 'product_id',
+    foreignKey: 'productId',
   })
   declare cartItems: HasMany<typeof CartItem>
 
   @hasMany(() => OrderItem, {
-    foreignKey: 'product_id',
+    foreignKey: 'productId',
   })
   declare orderItems: HasMany<typeof OrderItem>
 }

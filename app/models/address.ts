@@ -8,17 +8,17 @@ export default class Address extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare user_id: number
+  @column({ columnName: 'user_id' })
+  declare userId: number
 
   @column()
   declare label: string
 
-  @column()
-  declare recipient_name: string
+  @column({ columnName: 'recipient_name' })
+  declare recipientName: string
 
-  @column()
-  declare phone_number: string
+  @column({ columnName: 'phone_number' })
+  declare phoneNumber: string
 
   @column()
   declare address: string
@@ -29,8 +29,8 @@ export default class Address extends BaseModel {
   @column()
   declare province: string
 
-  @column()
-  declare postal_code: string
+  @column({ columnName: 'postal_code' })
+  declare postalCode: string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -39,12 +39,12 @@ export default class Address extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => User, {
-    foreignKey: 'user_id',
+    foreignKey: 'userId',
   })
   declare user: BelongsTo<typeof User>
 
   @hasMany(() => Order, {
-    foreignKey: 'shipping_address_id',
+    foreignKey: 'shippingAddressId',
   })
   declare orders: HasMany<typeof Order>
 }

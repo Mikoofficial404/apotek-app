@@ -18,7 +18,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'full_name' })
   declare fullName: string | null
 
   @column()
@@ -37,17 +37,17 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare updatedAt: DateTime | null
 
   @hasMany(() => Address, {
-    foreignKey: 'user_id',
+    foreignKey: 'userId',
   })
   declare addresses: HasMany<typeof Address>
 
   @hasMany(() => Cart, {
-    foreignKey: 'user_id',
+    foreignKey: 'userId',
   })
   declare carts: HasMany<typeof Cart>
 
   @hasMany(() => Order, {
-    foreignKey: 'user_id',
+    foreignKey: 'userId',
   })
   declare orders: HasMany<typeof Order>
 

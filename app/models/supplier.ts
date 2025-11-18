@@ -7,14 +7,14 @@ export default class Supplier extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare name_supplier: string
+  @column({ columnName: 'name_supplier' })
+  declare nameSupplier: string
 
   @column()
   declare alamat: string
 
-  @column()
-  declare phone_number: string
+  @column({ columnName: 'phone_number' })
+  declare phoneNumber: string
 
   @column()
   declare email: string
@@ -26,7 +26,7 @@ export default class Supplier extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Product, {
-    foreignKey: 'supplier_id',
+    foreignKey: 'supplierId',
   })
   declare products: HasMany<typeof Product>
 }

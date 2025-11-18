@@ -65,26 +65,42 @@ export default class ProductsController {
       }
 
       const payload = await request.validateUsing(ProductValidator)
+
+      const imageFile = payload.image_url
+      let imageUrl: string | null = null
+
+      if (imageFile) {
+        const tempFileName = `temp_${Date.now()}.${imageFile.extname}`
+        await imageFile.move(app.makePath('uploads/products'), {
+          name: tempFileName,
+          overwrite: true,
+        })
+        imageUrl = `uploads/products/${imageFile.fileName}`
+      }
+
       const product = await Product.create({
         nameProduct: payload.name_product,
         stock: payload.stock,
         harga: payload.harga,
-        category_id: payload.category_id,
-        supplier_id: payload.supplier_id,
-        image_url: '',
+        categoryId: payload.category_id,
+        supplierId: payload.supplier_id,
+        imageUrl: imageUrl,
       })
+
+      if (imageUrl && imageFile) {
+        const oldPath = app.makePath(imageUrl)
+        const newFileName = `${product.id}.${imageFile.extname}`
+        const newPath = app.makePath(`uploads/products/${newFileName}`)
+
+        if (fs.existsSync(oldPath)) {
+          fs.renameSync(oldPath, newPath)
+          product.imageUrl = `uploads/products/${newFileName}`
+          await product.save()
+        }
+      }
 
       await product.load('category')
       await product.load('supplier')
-
-      const imageFile = payload.image_url
-      await imageFile.move(app.makePath('uploads/products'), {
-        name: `${product.id}.${imageFile.extname}`,
-        overwrite: true,
-      })
-
-      product.image_url = `uploads/products/${imageFile.fileName}`
-      await product.save()
 
       return response.status(201).json({
         data: product,
@@ -117,8 +133,8 @@ export default class ProductsController {
       }
 
       if (payload.image_url) {
-        if (product.image_url) {
-          const oldImagePath = app.makePath(product.image_url)
+        if (product.imageUrl) {
+          const oldImagePath = app.makePath(product.imageUrl)
           if (fs.existsSync(oldImagePath)) {
             fs.unlinkSync(oldImagePath)
           }
@@ -130,7 +146,7 @@ export default class ProductsController {
           overwrite: true,
         })
 
-        product.image_url = `uploads/products/${imageFile.fileName}`
+        product.imageUrl = `uploads/products/${imageFile.fileName}`
       }
 
       await product
@@ -138,8 +154,8 @@ export default class ProductsController {
           nameProduct: payload.name_product,
           stock: payload.stock,
           harga: payload.harga,
-          category_id: payload.category_id,
-          supplier_id: payload.supplier_id,
+          categoryId: payload.category_id,
+          supplierId: payload.supplier_id,
         })
         .save()
       await product.load('category')
@@ -166,8 +182,8 @@ export default class ProductsController {
       if (await bouncer.with(ProductPolicy).denies('delete', product)) {
         return response.forbidden('You are not authorized to create products')
       }
-      if (product.image_url) {
-        const oldImagePath = app.makePath(product.image_url)
+      if (product.imageUrl) {
+        const oldImagePath = app.makePath(product.imageUrl)
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath)
         }

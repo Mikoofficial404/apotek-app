@@ -8,11 +8,11 @@ export default class CartItem extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare cart_id: number
+  @column({ columnName: 'cart_id' })
+  declare cartId: number
 
-  @column()
-  declare product_id: number
+  @column({ columnName: 'product_id' })
+  declare productId: number
 
   @column()
   declare quantity: number
@@ -24,12 +24,12 @@ export default class CartItem extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Cart, {
-    foreignKey: 'cart_id',
+    foreignKey: 'cartId',
   })
   declare cart: BelongsTo<typeof Cart>
 
   @belongsTo(() => Product, {
-    foreignKey: 'product_id',
+    foreignKey: 'productId',
   })
   declare product: BelongsTo<typeof Product>
 }

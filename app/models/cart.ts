@@ -8,8 +8,8 @@ export default class Cart extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare user_id: number
+  @column({ columnName: 'user_id' })
+  declare userId: number
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -18,12 +18,12 @@ export default class Cart extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => User, {
-    foreignKey: 'user_id',
+    foreignKey: 'userId',
   })
   declare user: BelongsTo<typeof User>
 
   @hasMany(() => CartItem, {
-  foreignKey: 'cart_id',
+    foreignKey: 'cartId',
   })
   declare cartItems: HasMany<typeof CartItem>
 }

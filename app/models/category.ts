@@ -7,8 +7,8 @@ export default class Category extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare category_name: string
+  @column({ columnName: 'category_name' })
+  declare categoryName: string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -17,7 +17,7 @@ export default class Category extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Product, {
-    foreignKey: 'category_id',
+    foreignKey: 'categoryId',
   })
   declare products: HasMany<typeof Product>
 }

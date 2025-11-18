@@ -8,11 +8,11 @@ export default class OrderItem extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
-  declare order_id: number
+  @column({ columnName: 'order_id' })
+  declare orderId: number
 
-  @column()
-  declare product_id: number
+  @column({ columnName: 'product_id' })
+  declare productId: number
 
   @column()
   declare quantity: number
@@ -27,12 +27,12 @@ export default class OrderItem extends BaseModel {
   declare updatedAt: DateTime
 
   @belongsTo(() => Order, {
-    foreignKey: 'order_id',
+    foreignKey: 'orderId',
   })
   declare order: BelongsTo<typeof Order>
 
   @belongsTo(() => Product, {
-    foreignKey: 'product_id',
+    foreignKey: 'productId',
   })
   declare product: BelongsTo<typeof Product>
 }
