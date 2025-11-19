@@ -27,12 +27,12 @@ router
     router
       .resource('/category', CategoriesController)
       .apiOnly()
-      .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
+      .use(['index', 'show', 'store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
 
     router
       .resource('/supplier', SupplierController)
       .apiOnly()
-      .use(['store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
+      .use(['index', 'show', 'store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
 
     router
       .resource('/products', ProductController)

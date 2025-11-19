@@ -2,8 +2,43 @@ import type { HttpContext } from '@adonisjs/core/http'
 import SupplierPolicy from '#policies/supplier_policy'
 import Supplier from '#models/supplier'
 import { SupplierValidator, SupplierUpdateValidator } from '#validators/supplier'
+import { sortSupplier } from '#validators/sort_supplier'
 
 export default class SuppliersController {
+  public async index({ request, response, bouncer }: HttpContext) {
+    try {
+      if (await bouncer.with(SupplierPolicy).denies('view')) {
+        return response.forbidden('You are not authorized to view supplier')
+      }
+      const page = request.input('page', 1)
+      const perPage = request.input('per_page', 10)
+      const sortValidate = await request.validateUsing(sortSupplier)
+      const sortBy = sortValidate.sort_by || 'id'
+      const order = sortValidate.order_by || 'asc'
+
+      const supplier = await Supplier.query().orderBy(sortBy, order).paginate(page, perPage)
+      return response.status(200).json({
+        data: supplier,
+      })
+    } catch (error) {
+      return response.status(404).json({
+        message: error.message,
+      })
+    }
+  }
+  public async show({ params, response, bouncer }: HttpContext) {
+    try {
+      if (await bouncer.with(SupplierPolicy).denies('view')) {
+        return response.forbidden('You are not authorized to view Suplier')
+      }
+      const supplier = await Supplier.query().where('id', params.id).firstOrFail()
+      return response.status(200).json({ data: supplier })
+    } catch (error) {
+      return response.status(404).json({
+        message: error.message,
+      })
+    }
+  }
   public async store({ request, response, bouncer }: HttpContext) {
     try {
       if (await bouncer.with(SupplierPolicy).denies('create')) {

@@ -10,8 +10,8 @@ export default class SupplierPolicy extends BasePolicy {
     return
   }
 
-  view(user: User): AuthorizerResponse {
-    return user.role === 'user'
+  view(_user: User): AuthorizerResponse {
+    return true
   }
 
   create(_user: User): AuthorizerResponse {

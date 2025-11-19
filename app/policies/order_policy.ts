@@ -17,18 +17,18 @@ export default class OrderPolicy extends BasePolicy {
   }
 
   view(user: User, order: Order): AuthorizerResponse {
-    return user.role === 'admin' || order.userId === user.id
+    return order.userId === user.id
   }
 
   create(_user: User): AuthorizerResponse {
     return true
   }
 
-  update(_user: User, _order: Order): AuthorizerResponse {
-    return _order.userId === _user.id
+  update(user: User, order: Order): AuthorizerResponse {
+    return order.userId === user.id
   }
 
-  delete(_user: User, _order: Order): AuthorizerResponse {
-    return _order.userId === _user.id
+  delete(user: User, order: Order): AuthorizerResponse {
+    return order.userId === user.id
   }
 }

@@ -19,6 +19,22 @@ export default class CategoriesController {
       })
     } catch (error) {}
   }
+
+  public async show({ params, response, bouncer }: HttpContext) {
+    try {
+      if (await bouncer.with(CategoryPolicy).denies('view')) {
+        return response.forbidden('You are not authorized to view')
+      }
+      const category = await Category.query().where('id', params.id).firstOrFail()
+      return response.status(200).json({
+        data: category,
+      })
+    } catch (error) {
+      return response.status(404).json({
+        message: error.message,
+      })
+    }
+  }
   public async store({ bouncer, request, response }: HttpContext) {
     try {
       if (await bouncer.with(CategoryPolicy).denies('create')) {
