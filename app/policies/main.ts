@@ -13,7 +13,11 @@
 */
 
 export const policies = {
+  CartItemPolicy: () => import('#policies/cart_item_policy'),
+  CartPolicy: () => import('#policies/cart_policy'),
+  OrderItemPolicy: () => import('#policies/order_item_policy'),
+  OrderPolicy: () => import('#policies/order_policy'),
   SupplierPolicy: () => import('#policies/supplier_policy'),
   CategoryPolicy: () => import('#policies/category_policy'),
-  ProductPolicy: () => import('#policies/product_policy')
+  ProductPolicy: () => import('#policies/product_policy'),
 }

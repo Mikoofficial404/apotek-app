@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import User from './user.js'
 import Address from './address.js'
 import OrderItem from './order_item.js'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import { randomUUID } from 'node:crypto'
 
 export default class Order extends BaseModel {
   @column({ isPrimary: true })
@@ -47,4 +48,9 @@ export default class Order extends BaseModel {
     foreignKey: 'orderId',
   })
   declare orderItems: HasMany<typeof OrderItem>
+
+  @beforeCreate()
+  public static async setOrder(order: Order) {
+    order.orderCode = 'ORD-' + randomUUID().split('-')[0].toUpperCase()
+  }
 }

@@ -66,7 +66,7 @@ export default class ProductsController {
 
       const payload = await request.validateUsing(ProductValidator)
 
-      const imageFile = payload.image_url
+      const imageFile = payload.imageUrl
       let imageUrl: string | null = null
 
       if (imageFile) {
@@ -79,11 +79,11 @@ export default class ProductsController {
       }
 
       const product = await Product.create({
-        nameProduct: payload.name_product,
+        nameProduct: payload.nameProduct,
         stock: payload.stock,
         harga: payload.harga,
-        categoryId: payload.category_id,
-        supplierId: payload.supplier_id,
+        categoryId: payload.categoryId,
+        supplierId: payload.supplierId,
         imageUrl: imageUrl,
       })
 
@@ -125,14 +125,14 @@ export default class ProductsController {
         return response.forbidden('You are not authorized to create products')
       }
       const payload = await request.validateUsing(UpdateValidator)
-      const category = await Category.find(payload.category_id)
+      const category = await Category.find(payload.categoryId)
       if (!category) {
         return response.badRequest({
-          errors: [{ field: 'category_id', message: 'Invalid category ID' }],
+          errors: [{ field: 'categoryId', message: 'Invalid category ID' }],
         })
       }
 
-      if (payload.image_url) {
+      if (payload.imageUrl) {
         if (product.imageUrl) {
           const oldImagePath = app.makePath(product.imageUrl)
           if (fs.existsSync(oldImagePath)) {
@@ -140,7 +140,7 @@ export default class ProductsController {
           }
         }
 
-        const imageFile = payload.image_url
+        const imageFile = payload.imageUrl
         await imageFile.move(app.makePath('uploads/products'), {
           name: `${product.id}.${imageFile.extname}`,
           overwrite: true,
@@ -151,11 +151,11 @@ export default class ProductsController {
 
       await product
         .merge({
-          nameProduct: payload.name_product,
+          nameProduct: payload.nameProduct,
           stock: payload.stock,
           harga: payload.harga,
-          categoryId: payload.category_id,
-          supplierId: payload.supplier_id,
+          categoryId: payload.categoryId,
+          supplierId: payload.supplierId,
         })
         .save()
       await product.load('category')
