@@ -1,5 +1,6 @@
 import env from '#start/env'
 import Order from '#models/order'
+import { createHash } from 'node:crypto'
 
 interface MidtransItem {
   id: string
@@ -56,9 +57,9 @@ export default class MidtransService {
       },
       item_details: items,
       callbacks: {
-        finish: `${env.get('APP_URL')}/payment/finish`,
-        error: `${env.get('APP_URL')}/payment/error`,
-        pending: `${env.get('APP_URL')}/payment/pending`,
+        finish: `${env.get('APP_URL')}payment/finish`,
+        error: `${env.get('APP_URL')}payment/error`,
+        pending: `${env.get('APP_URL')}payment/pending`,
       },
     }
 
@@ -84,9 +85,7 @@ export default class MidtransService {
   }
 
   verifySignature(orderId: string, statusCode: string, grossAmount: string, serverKey: string) {
-    const crypto = require('node:crypto')
-    const hash = crypto
-      .createHash('sha512')
+    const hash = createHash('sha512')
       .update(orderId + statusCode + grossAmount + serverKey)
       .digest('hex')
     return hash

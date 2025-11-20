@@ -8,12 +8,29 @@ export default class PaymentController {
     try {
       const notification = request.body()
 
+      // Log notification untuk debug
+      console.log('Midtrans notification received:', JSON.stringify(notification, null, 2))
+
       const orderId = notification.order_id
       const transactionStatus = notification.transaction_status
       const fraudStatus = notification.fraud_status
       const statusCode = notification.status_code
       const grossAmount = notification.gross_amount
       const signatureKey = notification.signature_key
+
+      // Validasi data yang diperlukan
+      if (!orderId || !transactionStatus || !statusCode || !grossAmount) {
+        console.error('Missing required notification data:', {
+          orderId,
+          transactionStatus,
+          statusCode,
+          grossAmount,
+        })
+        return response.badRequest({
+          status: 'error',
+          message: 'Missing required notification data',
+        })
+      }
 
       const midtrans = new MidtransService()
       const serverKey = env.get('MIDTRANS_SERVER_KEY', '')
@@ -24,11 +41,28 @@ export default class PaymentController {
         serverKey
       )
 
+      console.log('Signature verification:', {
+        received: signatureKey,
+        expected: expectedSignature,
+        match: signatureKey === expectedSignature,
+      })
+
       if (signatureKey !== expectedSignature) {
+        console.error('Invalid signature')
         return response.unauthorized({ message: 'Invalid signature' })
       }
 
-      const order = await Order.query().where('order_code', orderId).firstOrFail()
+      const order = await Order.query().where('order_code', orderId).first()
+
+      if (!order) {
+        console.error(`Order not found: ${orderId}`)
+        return response.notFound({
+          status: 'error',
+          message: `Order not found: ${orderId}`,
+        })
+      }
+
+      console.log(`Processing order ${orderId} with status ${transactionStatus}`)
 
       if (transactionStatus === 'capture') {
         if (fraudStatus === 'accept') {
@@ -55,11 +89,14 @@ export default class PaymentController {
 
       await order.save()
 
+      console.log(`Order ${orderId} updated successfully`)
+
       return response.ok({
         status: 'success',
         message: 'Payment notification processed',
       })
     } catch (error) {
+      console.error('Notification processing error:', error)
       return response.badRequest({
         status: 'error',
         message: (error as any)?.message ?? 'Failed to process payment notification',
@@ -92,5 +129,65 @@ export default class PaymentController {
         message: 'Order not found',
       })
     }
+  }
+
+  public async manualUpdateStatus({ params, request, response }: HttpContext) {
+    try {
+      const order = await Order.query().where('order_code', params.orderCode).firstOrFail()
+
+      const { paymentStatus, orderStatus } = request.body()
+
+      if (paymentStatus) {
+        order.paymentStatus = paymentStatus
+      }
+
+      if (orderStatus) {
+        order.status = orderStatus
+      }
+
+      await order.save()
+
+      return response.ok({
+        status: 'success',
+        message: 'Order status updated',
+        data: {
+          order_code: order.orderCode,
+          payment_status: order.paymentStatus,
+          order_status: order.status,
+        },
+      })
+    } catch (error) {
+      return response.notFound({
+        status: 'error',
+        message: 'Order not found',
+      })
+    }
+  }
+
+  public async finish({ request, response }: HttpContext) {
+    const orderId = request.input('order_id')
+    return response.ok({
+      status: 'success',
+      message: 'Payment finished',
+      order_id: orderId,
+    })
+  }
+
+  public async pending({ request, response }: HttpContext) {
+    const orderId = request.input('order_id')
+    return response.ok({
+      status: 'success',
+      message: 'Payment pending',
+      order_id: orderId,
+    })
+  }
+
+  public async error({ request, response }: HttpContext) {
+    const orderId = request.input('order_id')
+    return response.ok({
+      status: 'error',
+      message: 'Payment error',
+      order_id: orderId,
+    })
   }
 }

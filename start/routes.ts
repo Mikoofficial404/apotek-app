@@ -100,5 +100,15 @@ router
     // Payment routes buat midtrans
     router.post('/payment/notification', [PaymentController, 'notification'])
     router.get('/payment/status/:orderCode', [PaymentController, 'checkStatus'])
+    router.put('/payment/manual-update/:orderCode', [PaymentController, 'manualUpdateStatus'])
   })
   .prefix('/api')
+
+// Payment callback routes (tanpa prefix /api karena dipanggil dari Midtrans redirect)
+router
+  .group(() => {
+    router.get('/finish', [PaymentController, 'finish'])
+    router.get('/pending', [PaymentController, 'pending'])
+    router.get('/error', [PaymentController, 'error'])
+  })
+  .prefix('/payment')
