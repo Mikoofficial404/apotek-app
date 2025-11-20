@@ -28,4 +28,14 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string.optional(),
   DB_DATABASE: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Midtrans payment gateway
+  |----------------------------------------------------------
+  */
+  MIDTRANS_SERVER_KEY: Env.schema.string.optional(),
+  MIDTRANS_CLIENT_KEY: Env.schema.string.optional(),
+  MIDTRANS_IS_PRODUCTION: Env.schema.boolean.optional(),
+  APP_URL: Env.schema.string.optional(),
 })

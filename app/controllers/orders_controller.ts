@@ -1,8 +1,12 @@
 import Order from '#models/order'
 import OrderPolicy from '#policies/order_policy'
-import { createOrderValidator, updateOrderValidator } from '#validators/order'
+import Cart from '#models/cart'
+import OrderItem from '#models/order_item'
+import MidtransService from '#services/midtrans_service'
+import { checkoutValidator, createOrderValidator, updateOrderValidator } from '#validators/order'
 import { sortOrder } from '#validators/sort_order'
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 
 export default class OrdersController {
   public async index({ request, response, auth }: HttpContext) {
@@ -75,6 +79,116 @@ export default class OrdersController {
       return response.status(404).json({
         status: 'error',
         message: (error as any)?.messages ?? (error as any)?.message ?? 'Order not found',
+      })
+    }
+  }
+
+  public async checkout({ request, response, bouncer, auth }: HttpContext) {
+    const trx = await db.transaction()
+
+    try {
+      if (await bouncer.with(OrderPolicy).denies('create')) {
+        return response.forbidden('You are not authorized to create orders')
+      }
+
+      const payload = await request.validateUsing(checkoutValidator)
+      const user = auth.getUserOrFail()
+
+      const cart = await Cart.query({ client: trx })
+        .where('id', payload.cartId)
+        .where('user_id', user.id)
+        .preload('cartItems', (query) => {
+          query.preload('product')
+        })
+        .firstOrFail()
+
+      if (cart.cartItems.length === 0) {
+        await trx.rollback()
+        return response.badRequest({ message: 'Cart is empty' })
+      }
+
+      let totalPrice = 0
+      for (const item of cart.cartItems) {
+        const product = item.product
+        if (product.stock < item.quantity) {
+          await trx.rollback()
+          return response.badRequest({
+            message: `Insufficient stock for ${product.nameProduct}`,
+          })
+        }
+        totalPrice += product.harga * item.quantity
+      }
+
+      const order = await Order.create(
+        {
+          userId: user.id,
+          shippingAddressId: payload.shippingAddressId,
+          totalPrice: totalPrice,
+          status: 'pending',
+          paymentStatus: 'unpaid',
+          paymentMethod: payload.paymentMethod,
+        },
+        { client: trx }
+      )
+
+      for (const item of cart.cartItems) {
+        const product = item.product
+        const subtotal = product.harga * item.quantity
+
+        await OrderItem.create(
+          {
+            orderId: order.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            subtotal: subtotal,
+          },
+          { client: trx }
+        )
+
+        product.stock -= item.quantity
+        await product.useTransaction(trx).save()
+      }
+
+      await db.from('cart_items').where('cart_id', cart.id).delete().useTransaction(trx)
+
+      if (payload.paymentMethod === 'midtrans') {
+        const midtrans = new MidtransService()
+        const items = cart.cartItems.map((item) => {
+          const product = item.product
+          return {
+            id: product.id.toString(),
+            price: product.harga,
+            quantity: item.quantity,
+            name: product.nameProduct,
+          }
+        })
+
+        const payment = await midtrans.createTransaction(order, items)
+        order.paymentToken = payment.token
+        order.paymentUrl = payment.redirect_url
+        await order.useTransaction(trx).save()
+      }
+
+      await trx.commit()
+
+      await order.load('orderItems', (query) => {
+        query.preload('product')
+      })
+
+      return response.created({
+        status: 'success',
+        message: 'Order created successfully',
+        data: {
+          order,
+          payment_url: order.paymentUrl,
+          payment_token: order.paymentToken,
+        },
+      })
+    } catch (error) {
+      await trx.rollback()
+      return response.badRequest({
+        status: 'error',
+        message: (error as any)?.messages ?? (error as any)?.message ?? 'Failed to checkout',
       })
     }
   }

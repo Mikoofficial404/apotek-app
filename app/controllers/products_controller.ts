@@ -8,11 +8,8 @@ import app from '@adonisjs/core/services/app'
 import fs from 'node:fs'
 
 export default class ProductsController {
-  public async index({ request, response, bouncer }: HttpContext) {
+  public async index({ request, response }: HttpContext) {
     try {
-      if (await bouncer.with(ProductPolicy).denies('view')) {
-        return response.forbidden('You are not authorized to view products')
-      }
       const page = request.input('page', 1)
       const perPage = request.input('per_page', 10)
       const categoryId = request.input('category_id')
@@ -38,11 +35,8 @@ export default class ProductsController {
     }
   }
 
-  public async show({ params, response, bouncer }: HttpContext) {
+  public async show({ params, response }: HttpContext) {
     try {
-      if (await bouncer.with(ProductPolicy).denies('view')) {
-        return response.forbidden('You are not authorized to view products')
-      }
       const product = await Product.query()
         .where('id', params.id)
         .preload('category')

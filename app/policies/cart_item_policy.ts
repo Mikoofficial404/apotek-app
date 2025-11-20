@@ -16,8 +16,26 @@ export default class CartItemPolicy extends BasePolicy {
     return
   }
 
-  async view(user: User, orderItem: CartItem): Promise<AuthorizerResponse> {
-    await orderItem.load('cart')
-    return user.role === 'admin' || orderItem.cart.userId === user.id
+  async view(user: User, cartItem: CartItem): Promise<AuthorizerResponse> {
+    await cartItem.load('cart')
+    return cartItem.cart.userId === user.id
+  }
+
+  async create(user: User, cartId: number): Promise<AuthorizerResponse> {
+    const cartModule = await import('#models/cart')
+    const Cart = cartModule.default
+    const cart = await Cart.find(cartId)
+    if (!cart) return false
+    return cart.userId === user.id
+  }
+
+  async update(user: User, cartItem: CartItem): Promise<AuthorizerResponse> {
+    await cartItem.load('cart')
+    return cartItem.cart.userId === user.id
+  }
+
+  async delete(user: User, cartItem: CartItem): Promise<AuthorizerResponse> {
+    await cartItem.load('cart')
+    return cartItem.cart.userId === user.id
   }
 }

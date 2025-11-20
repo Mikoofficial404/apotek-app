@@ -44,3 +44,11 @@ export const listOrderValidator = vine.compile(
     paymentStatus: vine.enum(['unpaid', 'paid', 'refunded'] as const).optional(),
   })
 )
+
+export const checkoutValidator = vine.compile(
+  vine.object({
+    cartId: vine.number().exists({ table: 'carts', column: 'id' }),
+    shippingAddressId: vine.number().exists({ table: 'addresses', column: 'id' }),
+    paymentMethod: vine.enum(['midtrans', 'manual'] as const),
+  })
+)

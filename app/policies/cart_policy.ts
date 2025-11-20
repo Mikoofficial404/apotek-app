@@ -16,19 +16,23 @@ export default class CartPolicy extends BasePolicy {
     return
   }
 
-  view(user: User, order: Cart): AuthorizerResponse {
-    return user.role === 'admin' || order.userId === user.id
+  viewList(_user: User): AuthorizerResponse {
+    return true
+  }
+
+  view(user: User, cart: Cart): AuthorizerResponse {
+    return cart.userId === user.id
   }
 
   create(_user: User): AuthorizerResponse {
     return true
   }
 
-  update(_user: User, _order: Cart): AuthorizerResponse {
-    return _order.userId === _user.id
+  update(user: User, cart: Cart): AuthorizerResponse {
+    return cart.userId === user.id
   }
 
-  delete(_user: User, _order: Cart): AuthorizerResponse {
-    return _order.userId === _user.id
+  delete(user: User, cart: Cart): AuthorizerResponse {
+    return cart.userId === user.id
   }
 }

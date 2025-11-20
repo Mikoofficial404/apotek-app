@@ -28,6 +28,18 @@ export default class Order extends BaseModel {
   @column({ columnName: 'payment_status' })
   declare paymentStatus: 'unpaid' | 'paid' | 'refunded'
 
+  @column({ columnName: 'payment_method' })
+  declare paymentMethod: string | null
+
+  @column({ columnName: 'payment_token' })
+  declare paymentToken: string | null
+
+  @column({ columnName: 'payment_url' })
+  declare paymentUrl: string | null
+
+  @column.dateTime({ columnName: 'payment_expired_at' })
+  declare paymentExpiredAt: DateTime | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
