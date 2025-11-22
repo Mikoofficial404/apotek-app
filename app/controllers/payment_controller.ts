@@ -166,28 +166,26 @@ export default class PaymentController {
 
   public async finish({ request, response }: HttpContext) {
     const orderId = request.input('order_id')
-    return response.ok({
-      status: 'success',
-      message: 'Payment finished',
-      order_id: orderId,
-    })
+    const statusCode = request.input('status_code')
+    const transactionStatus = request.input('transaction_status')
+
+    const frontendUrl = env.get('FRONTEND_URL', 'http://localhost:5173')
+    return response.redirect(
+      `${frontendUrl}/payment/finish?order_id=${orderId}&status_code=${statusCode}&transaction_status=${transactionStatus}`
+    )
   }
 
   public async pending({ request, response }: HttpContext) {
     const orderId = request.input('order_id')
-    return response.ok({
-      status: 'success',
-      message: 'Payment pending',
-      order_id: orderId,
-    })
+
+    const frontendUrl = env.get('FRONTEND_URL', 'http://localhost:5173')
+    return response.redirect(`${frontendUrl}/payment/pending?order_id=${orderId}`)
   }
 
   public async error({ request, response }: HttpContext) {
     const orderId = request.input('order_id')
-    return response.ok({
-      status: 'error',
-      message: 'Payment error',
-      order_id: orderId,
-    })
+
+    const frontendUrl = env.get('FRONTEND_URL', 'http://localhost:5173')
+    return response.redirect(`${frontendUrl}/payment/error?order_id=${orderId}`)
   }
 }

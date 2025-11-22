@@ -18,6 +18,7 @@ const PaymentController = () => import('#controllers/payment_controller')
 const AddressesController = () => import('#controllers/addresses_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import app from '@adonisjs/core/services/app'
 const AuthController = () => import('#controllers/auth_controller')
 router.get('/', async () => {
   return {
@@ -25,6 +26,15 @@ router.get('/', async () => {
   }
 })
 
+router.get('/uploads/*', async ({ request, response }) => {
+  try {
+    const filePath = request.url().replace('/uploads/', '')
+    const fullPath = app.makePath(`uploads/${filePath}`)
+    return response.download(fullPath)
+  } catch (error) {
+    return response.status(404).json({ message: 'File not found' })
+  }
+})
 router
   .group(() => {
     router.post('/auth/register', [AuthController, 'register'])

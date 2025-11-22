@@ -2,7 +2,6 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Address from '#models/address'
 
 export default class AddressesController {
-  // List user addresses
   public async index({ auth, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
@@ -21,7 +20,6 @@ export default class AddressesController {
     }
   }
 
-  // Show single address
   public async show({ auth, params, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
@@ -43,7 +41,6 @@ export default class AddressesController {
     }
   }
 
-  // Create address
   public async store({ auth, request, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
@@ -76,7 +73,6 @@ export default class AddressesController {
     }
   }
 
-  // Update address
   public async update({ auth, params, request, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()
@@ -111,7 +107,6 @@ export default class AddressesController {
     }
   }
 
-  // Delete address
   public async destroy({ auth, params, response }: HttpContext) {
     try {
       const user = auth.getUserOrFail()

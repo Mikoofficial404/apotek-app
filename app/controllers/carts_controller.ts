@@ -1,12 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Cart from '#models/cart'
-import CartPolicy from '#policies/cart_policy'
 
 export default class CartsController {
-  public async index({ bouncer, response }: HttpContext) {
-    await bouncer.authorize('viewList' as any, Cart)
+  public async index({ auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
 
     const carts = await Cart.query()
+      .where('user_id', user.id)
       .preload('user')
       .preload('cartItems', (query) => {
         query.preload('product')
@@ -15,10 +15,11 @@ export default class CartsController {
     return response.ok(carts)
   }
 
-  public async show({ bouncer, params, response }: HttpContext) {
+  public async show({ auth, params, response }: HttpContext) {
     const cart = await Cart.findOrFail(params.id)
-    if (await bouncer.with(CartPolicy).denies('view', cart)) {
-      return response.forbidden('You are not authorized to show cart')
+
+    if (cart.userId !== auth.user!.id) {
+      return response.forbidden('You are not authorized to view this cart')
     }
 
     await cart.load('cartItems', (query) => {
@@ -35,11 +36,7 @@ export default class CartsController {
     })
   }
 
-  public async store({ auth, bouncer, response }: HttpContext) {
-    if (await bouncer.with(CartPolicy).denies('create')) {
-      return response.forbidden('You are not authorized to delete cart')
-    }
-
+  public async store({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
 
     const existingCart = await Cart.query().where('user_id', user.id).first()
@@ -55,10 +52,11 @@ export default class CartsController {
     return response.created(cart)
   }
 
-  public async destroy({ bouncer, params, response }: HttpContext) {
+  public async destroy({ auth, params, response }: HttpContext) {
     const cart = await Cart.findOrFail(params.id)
-    if (await bouncer.with(CartPolicy).denies('delete', cart)) {
-      return response.forbidden('You are not authorized to delete cart')
+
+    if (cart.userId !== auth.user!.id) {
+      return response.forbidden('You are not authorized to delete this cart')
     }
 
     await cart.delete()
