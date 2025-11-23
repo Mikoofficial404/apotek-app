@@ -46,7 +46,6 @@ export default class AddressesController {
       const user = auth.getUserOrFail()
 
       const data = request.only([
-        'label',
         'recipientName',
         'phoneNumber',
         'address',
@@ -83,7 +82,6 @@ export default class AddressesController {
         .firstOrFail()
 
       const data = request.only([
-        'label',
         'recipientName',
         'phoneNumber',
         'address',

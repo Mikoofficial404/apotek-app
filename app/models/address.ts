@@ -11,9 +11,6 @@ export default class Address extends BaseModel {
   @column({ columnName: 'user_id' })
   declare userId: number
 
-  @column()
-  declare label: string
-
   @column({ columnName: 'recipient_name' })
   declare recipientName: string
 

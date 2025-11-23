@@ -16,8 +16,6 @@ export const updateCartItemValidator = vine.compile(
   })
 )
 
-// Untuk menghapus item dari cart biasanya cukup butuh cartId dan productId.
-// Quantity tidak diperlukan sehingga tidak divalidasi di sini.
 export const removeCartItemValidator = vine.compile(
   vine.object({
     cartId: vine.number().exists({ table: 'carts', column: 'id' }),
