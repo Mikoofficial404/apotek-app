@@ -6,6 +6,7 @@ import { sortProduct } from '#validators/sort_product'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import fs from 'node:fs'
+import { DateTime } from 'luxon'
 
 export default class ProductsController {
   public async index({ request, response }: HttpContext) {
@@ -72,13 +73,21 @@ export default class ProductsController {
         imageUrl = `uploads/products/${imageFile.fileName}`
       }
 
+      const harga = payload.hargaJual * 1.2
+
       const product = await Product.create({
         nameProduct: payload.nameProduct,
         stock: payload.stock,
-        harga: payload.harga,
+        harga: harga,
         categoryId: payload.categoryId,
         supplierId: payload.supplierId,
+        deskripsi: payload.deskripsi,
+        indikasi: payload.indikasi,
         imageUrl: imageUrl,
+        hargaBeli: payload.hargaBeli,
+        hargaJual: payload.hargaJual,
+        tanggalObat: payload.tanggalObat ? DateTime.fromJSDate(payload.tanggalObat) : null,
+        kadaluwarsa: payload.kadaluwarsa ? DateTime.fromJSDate(payload.kadaluwarsa) : null,
       })
 
       if (imageUrl && imageFile) {
@@ -143,13 +152,21 @@ export default class ProductsController {
         product.imageUrl = `uploads/products/${imageFile.fileName}`
       }
 
+      const harga = payload.hargaJual ? payload.hargaJual * 1.2 : undefined
+
       await product
         .merge({
           nameProduct: payload.nameProduct,
           stock: payload.stock,
-          harga: payload.harga,
+          harga: harga,
           categoryId: payload.categoryId,
           supplierId: payload.supplierId,
+          deskripsi: payload.deskripsi,
+          indikasi: payload.indikasi,
+          hargaBeli: payload.hargaBeli,
+          hargaJual: payload.hargaJual,
+          tanggalObat: payload.tanggalObat ? DateTime.fromJSDate(payload.tanggalObat) : undefined,
+          kadaluwarsa: payload.kadaluwarsa ? DateTime.fromJSDate(payload.kadaluwarsa) : undefined,
         })
         .save()
       await product.load('category')

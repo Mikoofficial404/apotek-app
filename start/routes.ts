@@ -16,6 +16,7 @@ const CartController = () => import('#controllers/carts_controller')
 const CartsItemsController = () => import('#controllers/carts_items_controller')
 const PaymentController = () => import('#controllers/payment_controller')
 const AddressesController = () => import('#controllers/addresses_controller')
+const ChatbotController = () => import('#controllers/chatbot_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import app from '@adonisjs/core/services/app'
@@ -122,3 +123,10 @@ router
     router.get('/error', [PaymentController, 'error'])
   })
   .prefix('/payment')
+
+// Chatbot AI endpoint (public)
+router.get('/api/chatbot/search', [ChatbotController, 'searchProducts'])
+router.get('/api/chatbot/categories', [ChatbotController, 'getCategories'])
+// Di routes.ts, tambahkan:
+router.get('/api/chatbot/debug', [ChatbotController, 'debug'])
+

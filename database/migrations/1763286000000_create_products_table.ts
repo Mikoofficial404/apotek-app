@@ -14,6 +14,8 @@ export default class extends BaseSchema {
       table.string('image_url').nullable()
       table.integer('category_id').unsigned().references('id').inTable('categories')
       table.integer('supplier_id').unsigned().references('id').inTable('suppliers')
+      table.text('deskripsi').nullable()
+      table.string('indikasi').nullable()
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

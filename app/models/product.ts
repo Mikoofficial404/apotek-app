@@ -28,6 +28,42 @@ export default class Product extends BaseModel {
   @column({ columnName: 'supplier_id' })
   declare supplierId: number
 
+  @column({ columnName: 'deskripsi' })
+  declare deskripsi: string | null
+
+  @column({ columnName: 'indikasi' })
+  declare indikasi: string | null
+
+  @column({ columnName: 'harga_beli' })
+  declare hargaBeli: number | null
+
+  @column({ columnName: 'harga_jual' })
+  declare hargaJual: number | null
+
+  @column.date({ columnName: 'tanggal_obat' })
+  declare tanggalObat: DateTime | null
+
+  @column.date({ columnName: 'kadaluwarsa' })
+  declare kadaluwarsa: DateTime | null
+
+  // @column({ columnName: 'dosis' })
+  // declare dosis: string
+
+  // @column({ columnName: 'aturan_pakai' })
+  // declare aturanPakai: string
+
+  // @column({ columnName: 'efek_samping' })
+  // declare efekSamping: string
+
+  // @column({ columnName: 'komposisi' })
+  // declare komposisi: string
+
+  // @column({ columnName: 'kemasan' })
+  // declare kemasan: string
+
+  // @column({ columnName: 'no_register' })
+  // declare noRegister: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
