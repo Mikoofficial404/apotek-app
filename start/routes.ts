@@ -46,13 +46,18 @@ router
       .apiOnly()
       .use(['index', 'show', 'store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
 
+
+    router
+      .get('/suppliers/export-pdf', [SupplierController, 'exportPdf'])
+      .use(middleware.auth({ guards: ['api'] }))
+
     router
       .resource('/supplier', SupplierController)
       .apiOnly()
       .use(['index', 'show', 'store', 'update', 'destroy'], middleware.auth({ guards: ['api'] }))
 
-    // Products (index & show public, lainnya perlu auth)
     router.get('/products', [ProductController, 'index'])
+    router.get('/products/export-pdf', [ProductController, 'exportPdf'])
     router.get('/products/:id', [ProductController, 'show'])
     router
       .group(() => {
@@ -88,6 +93,7 @@ router
     // Orders Group API
     router
       .group(() => {
+        router.get('/export-pdf', [OrderController, 'exportPdf'])
         router.get('/', [OrderController, 'index'])
         router.post('/checkout', [OrderController, 'checkout'])
         router.post('/', [OrderController, 'createOrder'])
@@ -115,7 +121,7 @@ router
   })
   .prefix('/api')
 
-// Payment callback routes (tanpa prefix /api karena dipanggil dari Midtrans redirect)
+
 router
   .group(() => {
     router.get('/finish', [PaymentController, 'finish'])
@@ -124,9 +130,9 @@ router
   })
   .prefix('/payment')
 
-// Chatbot AI endpoint (public)
+
 router.get('/api/chatbot/search', [ChatbotController, 'searchProducts'])
 router.get('/api/chatbot/categories', [ChatbotController, 'getCategories'])
-// Di routes.ts, tambahkan:
+
 router.get('/api/chatbot/debug', [ChatbotController, 'debug'])
 

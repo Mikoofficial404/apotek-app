@@ -7,6 +7,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import fs from 'node:fs'
 import { DateTime } from 'luxon'
+import PdfService from '#services/pdf_service'
 
 export default class ProductsController {
   public async index({ request, response }: HttpContext) {
@@ -208,6 +209,30 @@ export default class ProductsController {
     } catch (error) {
       console.error(error)
       return response.internalServerError('Failed to delete product')
+    }
+  }
+
+  public async exportPdf({ request, response }: HttpContext) {
+    try {
+      const categoryId = request.input('category_id')
+      const supplierId = request.input('supplier_id')
+
+      const products = await Product.query()
+        .if(categoryId, (query) => query.where('category_id', categoryId))
+        .if(supplierId, (query) => query.where('supplier_id', supplierId))
+        .orderBy('id', 'asc')
+        .preload('category')
+        .preload('supplier')
+
+      const pdfBuffer = await PdfService.generateProductsPdf(products)
+
+      response.header('Content-Type', 'application/pdf')
+      response.header('Content-Disposition', 'attachment; filename="laporan-produk.pdf"')
+
+      return response.send(pdfBuffer)
+    } catch (error) {
+      console.error(error)
+      return response.internalServerError('Failed to export PDF')
     }
   }
 }

@@ -3,6 +3,7 @@ import OrderPolicy from '#policies/order_policy'
 import Cart from '#models/cart'
 import OrderItem from '#models/order_item'
 import MidtransService from '#services/midtrans_service'
+import PdfService from '#services/pdf_service'
 import { checkoutValidator, createOrderValidator, updateOrderValidator } from '#validators/order'
 import { sortOrder } from '#validators/sort_order'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -256,6 +257,36 @@ export default class OrdersController {
         status: 'error',
         message: (error as any)?.messages ?? (error as any)?.message ?? 'Failed to delete order',
       })
+    }
+  }
+
+  public async exportPdf({ request, response, auth }: HttpContext) {
+    try {
+      const status = request.input('status')
+      const user = auth.user!
+
+      const query = Order.query()
+
+     
+      if (user.role !== 'admin') {
+        query.where('user_id', user.id)
+      }
+
+      if (status) {
+        query.where('status', status)
+      }
+
+      const orders = await query.preload('user').orderBy('id', 'desc')
+
+      const pdfBuffer = await PdfService.generateOrdersPdf(orders)
+
+      response.header('Content-Type', 'application/pdf')
+      response.header('Content-Disposition', 'attachment; filename="laporan-order.pdf"')
+
+      return response.send(pdfBuffer)
+    } catch (error) {
+      console.error(error)
+      return response.internalServerError('Failed to export PDF')
     }
   }
 }

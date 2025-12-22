@@ -3,6 +3,7 @@ import SupplierPolicy from '#policies/supplier_policy'
 import Supplier from '#models/supplier'
 import { SupplierValidator, SupplierUpdateValidator } from '#validators/supplier'
 import { sortSupplier } from '#validators/sort_supplier'
+import PdfService from '#services/pdf_service'
 
 export default class SuppliersController {
   public async index({ request, response, bouncer }: HttpContext) {
@@ -97,6 +98,21 @@ export default class SuppliersController {
         status: 'error',
         message: (error as any)?.messages ?? (error as any)?.message ?? 'Failed to delete supplier',
       })
+    }
+  }
+
+  public async exportPdf({ response }: HttpContext) {
+    try {
+      const suppliers = await Supplier.query().orderBy('id', 'asc')
+      const pdfBuffer = await PdfService.generateSuppliersPdf(suppliers)
+
+      response.header('Content-Type', 'application/pdf')
+      response.header('Content-Disposition', 'attachment; filename="laporan-supplier.pdf"')
+
+      return response.send(pdfBuffer)
+    } catch (error) {
+      console.error(error)
+      return response.internalServerError('Failed to export PDF')
     }
   }
 }
